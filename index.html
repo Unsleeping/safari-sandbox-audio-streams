@@ -24,8 +24,13 @@
           const audio1 = document.querySelector('#player1');
           const audio2 = document.querySelector('#player2');
           if (audio1 && audio2) {
+            if (!audio1.paused && !audio2.paused) {
+              audio1.pause();
+              audio2.pause();
+            } else {
             audio1.play();
             audio2.play();
+            }
           }
         });
         function subscribe(events, isExtra = false) {
@@ -43,9 +48,11 @@
         function formatTime(time) {
           const minutes = Math.floor(time / 60);
           const seconds = Math.floor(time % 60);
+          const milliseconds = Math.floor((time % 1) * 1000);
           const formattedMinutes = String(minutes).padStart(2, '0');
           const formattedSeconds = String(seconds).padStart(2, '0');
-          return formattedMinutes + ':' + formattedSeconds;
+          const formattedMilliseconds = String(milliseconds).padStart(3, '0');
+          return formattedMinutes + ':' + formattedSeconds + ':' + formattedMilliseconds;
         }
         function subcribeToTimeUpdate() {
           const audio1 = document.querySelector('#player1');
@@ -118,7 +125,7 @@
         "
         id="play"
       >
-        Play 2 sounds
+        Play / pause 2 audio streams
       </button>
       <audio controls id="player1" style="margin-bottom: 10px; border: 3px solid green; border-radius: 30px;">
         <source
@@ -131,8 +138,14 @@
       <audio controls id="player2" style="border: 3px solid red;  border-radius: 30px;">
         <source src="https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav" />
       </audio>
-      <div style="display: flex; justify-content: space-between;"><p style="color: green; font-weight:bold; font-size: 16px">audio1</p><p style="color: red; font-weight:bold; font-size: 16px">audio2</p></div>
-      <div style="display: flex; justify-content: space-between; margin-top: -30px"><p style="color: green; font-weight:bold; font-size: 16px" id="timing1"></p><p style="color: red; font-weight:bold; font-size: 16px" id="timing2"></p></div>
+      <div style="display: flex; justify-content: space-between;">
+        <p style="color: green; font-weight:bold; font-size: 16px">audio1</p>
+        <p style="color: red; font-weight:bold; font-size: 16px">audio2</p>
+      </div>
+      <div style="display: flex; flex-direction: column; margin: 0 auto; min-height: 70px;">
+        <div style="color: green; font-weight:bold; font-size: 16px" id="timing1"></div>
+        <div style="color: red; font-weight:bold; font-size: 16px" id="timing2"></div>
+      </div>
       <div style="margin: 0 auto"><div id="startTime"></div></div>
       <div style="margin: 0 auto">>> log time format is MM:SS <<</div>
       <div style="margin-top: 30px; font-size: 1.5rem">Logs</div>
