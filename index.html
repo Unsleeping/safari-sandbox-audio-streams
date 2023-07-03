@@ -25,14 +25,42 @@
         });
         audio1.addEventListener('playing', function () {
           const div = document.createElement('div');
-          div.innerHTML = 'audio1 playing';
+          div.innerHTML = '> audio1 playing';
           if (logDiv) {
             logDiv.appendChild(div);
           }
         });
         audio2.addEventListener('playing', function () {
           const div = document.createElement('div');
-          div.innerHTML = 'audio2 playing';
+          div.innerHTML = '> audio2 playing';
+          if (logDiv) {
+            logDiv.appendChild(div);
+          }
+        });
+        audio1.addEventListener('ended', function () {
+          const div = document.createElement('div');
+          div.innerHTML = '> audio1 ended';
+          if (logDiv) {
+            logDiv.appendChild(div);
+          }
+        });
+        audio2.addEventListener('ended', function () {
+          const div = document.createElement('div');
+          div.innerHTML = '> audio2 ended';
+          if (logDiv) {
+            logDiv.appendChild(div);
+          }
+        });
+        audio1.addEventListener('paused', function () {
+          const div = document.createElement('div');
+          div.innerHTML = '> audio1 paused';
+          if (logDiv) {
+            logDiv.appendChild(div);
+          }
+        });
+        audio2.addEventListener('paused', function () {
+          const div = document.createElement('div');
+          div.innerHTML = '> audio2 paused';
           if (logDiv) {
             logDiv.appendChild(div);
           }
@@ -42,7 +70,7 @@
   </head>
   <body>
     <!-- <h1>Scroll to autoplay</h1> -->
-    <button id="play">Play 2 sounds</button>
+
     <div
       style="
         display: flex;
@@ -54,6 +82,20 @@
         /* background-color: #3aebca; */
       "
     >
+      <button
+        style="
+          height: 60px;
+          width: 100%;
+          margin-bottom: 30px;
+          border-radius: 5px;
+          outline: 0;
+          border: 1px solid gray;
+          background-color: #3aebca;
+        "
+        id="play"
+      >
+        Play 2 sounds
+      </button>
       <audio controls id="player1" style="margin-bottom: 10px">
         <source
           src="http://www.jplayer.org/audio/mp3/TSP-01-Cro_magnon_man.mp3"
@@ -65,9 +107,9 @@
       <audio controls id="player2">
         <source src="https://www.computerhope.com/jargon/m/example.mp3" />
       </audio>
+      <div style="margin-top: 30px; font-size: 1.5rem">Logs:</div>
+      <div id="log" style="font-size: 1.5rem"></div>
     </div>
-    <div>Logs:</div>
-    <div id="log"></div>
 
     <div id="log2" style="margin-top: 50px"></div>
   </body>
