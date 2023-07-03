@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        console.log('loaded');
+        const audio1 = document.querySelector('#player1');
+        const audio2 = document.querySelector('#player2');
+        const logDiv = document.querySelector('#log');
+        const log2Div = document.querySelector('#log2');
+        const btn = document.querySelector('#play');
+        // window.addEventListener('scroll', function () {
+        //   if (audio1 && audio2) {
+        //     audio1.play();
+        //     audio2.play();
+        //   }
+        // });
+        btn.addEventListener('click', function () {
+          const audio1 = document.querySelector('#player1');
+          const audio2 = document.querySelector('#player2');
+          if (audio1 && audio2) {
+            audio1.play();
+            audio2.play();
+          }
+        });
+        audio1.addEventListener('playing', function () {
+          const div = document.createElement('div');
+          div.innerHTML = 'audio1 playing';
+          if (logDiv) {
+            logDiv.appendChild(div);
+          }
+        });
+        audio2.addEventListener('playing', function () {
+          const div = document.createElement('div');
+          div.innerHTML = 'audio2 playing';
+          if (logDiv) {
+            logDiv.appendChild(div);
+          }
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <!-- <h1>Scroll to autoplay</h1> -->
+    <button id="play">Play 2 sounds</button>
+    <div
+      style="
+        display: flex;
+        flex-direction: column;
+        margin: 10px auto;
+        max-width: 300px;
+        margin-top: 30px;
+        /* height: 1000px; */
+        /* background-color: #3aebca; */
+      "
+    >
+      <audio controls id="player1" style="margin-bottom: 10px">
+        <source
+          src="http://www.jplayer.org/audio/mp3/TSP-01-Cro_magnon_man.mp3"
+        />
+        <source
+          src="http://www.jplayer.org/audio/ogg/TSP-01-Cro_magnon_man.ogg"
+        />
+      </audio>
+      <audio controls id="player2">
+        <source src="https://www.computerhope.com/jargon/m/example.mp3" />
+      </audio>
+    </div>
+    <div>Logs:</div>
+    <div id="log"></div>
+
+    <div id="log2" style="margin-top: 50px"></div>
+  </body>
+</html>
