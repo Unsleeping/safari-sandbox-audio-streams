@@ -4,18 +4,20 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <script>
       document.addEventListener('DOMContentLoaded', function () {
-        console.log('loaded');
-        const audio1 = document.querySelector('#player1');
-        const audio2 = document.querySelector('#player2');
-        const logDiv = document.querySelector('#log');
-        const log2Div = document.querySelector('#log2');
         const btn = document.querySelector('#play');
-        // window.addEventListener('scroll', function () {
-        //   if (audio1 && audio2) {
-        //     audio1.play();
-        //     audio2.play();
-        //   }
-        // });
+        function getLogDiv(isFirst, isExtraContainer) {
+          const logDiv = document.querySelector(isExtraContainer ? '#logExtra':'#log');
+          const log2Div = document.querySelector(isExtraContainer ? '#log2Extra':'#log2');
+          return isFirst ? logDiv : log2Div;
+        }
+        function createLog(str, isFirst = false, isExtraContainer = false) {
+          const container = getLogDiv(isFirst, isExtraContainer);
+          const div = document.createElement('div');
+          div.innerHTML = `${new Date().toISOString().slice(14, -5)} > ${str}`;
+          if (container) {
+            container.appendChild(div);
+          }
+        }
         btn.addEventListener('click', function () {
           const audio1 = document.querySelector('#player1');
           const audio2 = document.querySelector('#player2');
@@ -24,54 +26,56 @@
             audio2.play();
           }
         });
-        audio1.addEventListener('playing', function () {
-          const div = document.createElement('div');
-          div.innerHTML = '> audio1 playing';
-          if (logDiv) {
-            logDiv.appendChild(div);
-          }
-        });
-        audio2.addEventListener('playing', function () {
-          const div = document.createElement('div');
-          div.innerHTML = '> audio2 playing';
-          if (logDiv) {
-            logDiv.appendChild(div);
-          }
-        });
-        audio1.addEventListener('ended', function () {
-          const div = document.createElement('div');
-          div.innerHTML = '> audio1 ended';
-          if (logDiv) {
-            logDiv.appendChild(div);
-          }
-        });
-        audio2.addEventListener('ended', function () {
-          const div = document.createElement('div');
-          div.innerHTML = '> audio2 ended';
-          if (logDiv) {
-            logDiv.appendChild(div);
-          }
-        });
-        audio1.addEventListener('paused', function () {
-          const div = document.createElement('div');
-          div.innerHTML = '> audio1 paused';
-          if (logDiv) {
-            logDiv.appendChild(div);
-          }
-        });
-        audio2.addEventListener('paused', function () {
-          const div = document.createElement('div');
-          div.innerHTML = '> audio2 paused';
-          if (logDiv) {
-            logDiv.appendChild(div);
-          }
-        });
+        function subscribeToEvents() {
+          const loggerEvents = ['playing', 'pause', 'ended'];
+          const extraEvents = [
+            'abort',
+            'canplay',
+            'canplaythrough',
+            'durationchange',
+            'emptied',
+            'error',
+            'loadeddata',
+            'loadedmetadata',
+            'loadstart',
+            'play',
+            'progress',
+            'resize',
+            'ratechange',
+            'seeked',
+            'seeking',
+            'stalled',
+            'suspend',
+            // 'timeupdate',
+            'volumechange',
+            'waiting',
+          ];
+          loggerEvents.forEach(function (event) {
+            const audio1 = document.querySelector('#player1');
+            const audio2 = document.querySelector('#player2');
+            audio1.addEventListener(event, function () {
+              createLog(event, true);
+            });
+            audio2.addEventListener(event, function () {
+              createLog(event, false);
+            });
+          });
+          extraEvents.forEach(function (event) {
+            const audio1 = document.querySelector('#player1');
+            const audio2 = document.querySelector('#player2');
+            audio1.addEventListener(event, function () {
+              createLog(event, true, true);
+            });
+            audio2.addEventListener(event, function () {
+              createLog(event, false, true);
+            });
+          })
+        }
+        subscribeToEvents();
       });
     </script>
   </head>
   <body>
-    <!-- <h1>Scroll to autoplay</h1> -->
-
     <div
       style="
         display: flex;
@@ -79,8 +83,6 @@
         margin: 10px auto;
         max-width: 300px;
         margin-top: 30px;
-        /* height: 1000px; */
-        /* background-color: #3aebca; */
       "
     >
       <button
@@ -88,16 +90,17 @@
           height: 60px;
           width: 100%;
           margin-bottom: 30px;
-          border-radius: 5px;
+          border-radius: 15px;
           outline: 0;
-          border: 1px solid gray;
+          border: 2px solid rgb(212, 211, 211);
           background-color: #3aebca;
+          font-size:16px;
         "
         id="play"
       >
         Play 2 sounds
       </button>
-      <audio controls id="player1" style="margin-bottom: 10px">
+      <audio controls id="player1" style="margin-bottom: 10px; border: 3px solid green; border-radius: 30px;">
         <source
           src="http://www.jplayer.org/audio/mp3/TSP-01-Cro_magnon_man.mp3"
         />
@@ -105,13 +108,26 @@
           src="http://www.jplayer.org/audio/ogg/TSP-01-Cro_magnon_man.ogg"
         />
       </audio>
-      <audio controls id="player2">
-        <source src="https://www.computerhope.com/jargon/m/example.mp3" />
+      <audio controls id="player2" style="border: 3px solid red;  border-radius: 30px;">
+        <source src="https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav" />
       </audio>
-      <div style="margin-top: 30px; font-size: 1.5rem">Logs:</div>
-      <div id="log" style="font-size: 1.5rem"></div>
-    </div>
-
-    <div id="log2" style="margin-top: 50px"></div>
+      <div style="display: flex; justify-content: space-between;"><p style="color: green; font-weight:bold; font-size: 16px">audio1</p><p style="color: red; font-weight:bold; font-size: 16px">audio2</p></div>
+      <div style="margin: 0 auto">>> time format is MM:SS <<</div>
+      <div style="margin-top: 30px; font-size: 1.5rem">Logs</div>
+      <div style="align-self: center; min-height: 50px; min-width: 100%; background-color: rgb(227, 248, 255);border-radius: 3px">
+        <div style="display: flex; justify-content: space-between; padding: 10px;">
+          <div id="log" style="font-size: 14px; color: green; white-space: nowrap; margin-right:10px;"></div>
+          <div id="log2" style="font-size: 14px; color: red; white-space: nowrap;"></div>
+        </div>
+      </div>
+      <div style="margin-top: 30px; font-size: 1.5rem">Additional Logs </div>
+      <div style="align-self: center; min-width: 100%; background-color: rgb(227, 248, 255); border-radius: 3px;">
+        <div style="display: flex; justify-content: space-between; padding: 10px; width:max-content;">
+          <div id="logExtra" style="font-size: 14px; color: green; white-space: nowrap; margin-right:10px;"></div>
+          <div id="log2Extra" style="font-size: 14px; color: red; white-space: nowrap;"></div>
+        </div>
+      </div>
+    </div>   
+  </div>
   </body>
 </html>
