@@ -4,6 +4,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <script>
       document.addEventListener('DOMContentLoaded', function () {
+        const startTime = document.querySelector('#startTime')
+        startTime.innerHTML = `>> start time is: <span style="font-weight: bold">${new Date().toISOString().slice(11, -5)}</span> <<`
         const btn = document.querySelector('#play');
         function getLogDiv(isFirst, isExtraContainer) {
           const logDiv = document.querySelector(isExtraContainer ? '#logExtra':'#log');
@@ -26,6 +28,41 @@
             audio2.play();
           }
         });
+        function subscribe(events, isExtra = false) {
+          events.forEach(function (event) {
+            const audio1 = document.querySelector('#player1');
+            const audio2 = document.querySelector('#player2');
+            audio1.addEventListener(event, function () {
+              createLog(event, true, isExtra);
+            });
+            audio2.addEventListener(event, function () {
+              createLog(event, false, isExtra);
+            });
+          });
+        }
+        function formatTime(time) {
+          const minutes = Math.floor(time / 60);
+          const seconds = Math.floor(time % 60);
+          const formattedMinutes = String(minutes).padStart(2, '0');
+          const formattedSeconds = String(seconds).padStart(2, '0');
+          return formattedMinutes + ':' + formattedSeconds;
+        }
+        function subcribeToTimeUpdate() {
+          const audio1 = document.querySelector('#player1');
+          const audio2 = document.querySelector('#player2');
+          const div1 = document.querySelector('#timing1')
+          const div2 = document.querySelector('#timing2')
+          audio1.addEventListener('timeupdate', function (e) {
+            if (div1 && e.target.currentTime) {
+              div1.innerHTML = formatTime(e.target.currentTime);
+            }
+          });
+          audio2.addEventListener('timeupdate', function (e) {
+            if (div2 && e.target.currentTime) {
+              div2.innerHTML = formatTime(e.target.currentTime);
+            }
+          });
+        }
         function subscribeToEvents() {
           const loggerEvents = ['playing', 'pause', 'ended'];
           const extraEvents = [
@@ -50,26 +87,9 @@
             'volumechange',
             'waiting',
           ];
-          loggerEvents.forEach(function (event) {
-            const audio1 = document.querySelector('#player1');
-            const audio2 = document.querySelector('#player2');
-            audio1.addEventListener(event, function () {
-              createLog(event, true);
-            });
-            audio2.addEventListener(event, function () {
-              createLog(event, false);
-            });
-          });
-          extraEvents.forEach(function (event) {
-            const audio1 = document.querySelector('#player1');
-            const audio2 = document.querySelector('#player2');
-            audio1.addEventListener(event, function () {
-              createLog(event, true, true);
-            });
-            audio2.addEventListener(event, function () {
-              createLog(event, false, true);
-            });
-          })
+          subscribe(loggerEvents)
+          subscribe(extraEvents, true)
+          subcribeToTimeUpdate()
         }
         subscribeToEvents();
       });
@@ -112,7 +132,9 @@
         <source src="https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav" />
       </audio>
       <div style="display: flex; justify-content: space-between;"><p style="color: green; font-weight:bold; font-size: 16px">audio1</p><p style="color: red; font-weight:bold; font-size: 16px">audio2</p></div>
-      <div style="margin: 0 auto">>> time format is MM:SS <<</div>
+      <div style="display: flex; justify-content: space-between; margin-top: -30px"><p style="color: green; font-weight:bold; font-size: 16px" id="timing1"></p><p style="color: red; font-weight:bold; font-size: 16px" id="timing2"></p></div>
+      <div style="margin: 0 auto"><div id="startTime"></div></div>
+      <div style="margin: 0 auto">>> log time format is MM:SS <<</div>
       <div style="margin-top: 30px; font-size: 1.5rem">Logs</div>
       <div style="align-self: center; min-height: 50px; min-width: 100%; background-color: rgb(227, 248, 255);border-radius: 3px">
         <div style="display: flex; justify-content: space-between; padding: 10px;">
